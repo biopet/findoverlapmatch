@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to tool-template's documentation!
-=========================================
+Welcome to FindOverlapMatch's documentation!
+============================================
 
 .. mdinclude:: ../README.md
 
