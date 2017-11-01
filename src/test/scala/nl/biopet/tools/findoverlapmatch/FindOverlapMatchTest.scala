@@ -8,6 +8,7 @@ import org.testng.annotations.Test
 import scala.io.Source
 
 class FindOverlapMatchTest extends ToolTest[Args] {
+  def toolCommand: FindOverlapMatch.type = FindOverlapMatch
   @Test
   def testNoArgs(): Unit = {
     intercept[IllegalArgumentException] {
