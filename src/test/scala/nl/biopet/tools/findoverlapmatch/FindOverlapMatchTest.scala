@@ -2,12 +2,13 @@ package nl.biopet.tools.findoverlapmatch
 
 import java.io.File
 
-import nl.biopet.test.BiopetTest
+import nl.biopet.utils.test.tools.ToolTest
 import org.testng.annotations.Test
 
 import scala.io.Source
 
-class FindOverlapMatchTest extends BiopetTest {
+class FindOverlapMatchTest extends ToolTest[Args] {
+  def toolCommand: FindOverlapMatch.type = FindOverlapMatch
   @Test
   def testNoArgs(): Unit = {
     intercept[IllegalArgumentException] {
