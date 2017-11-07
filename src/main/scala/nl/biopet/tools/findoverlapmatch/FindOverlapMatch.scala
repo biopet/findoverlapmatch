@@ -17,7 +17,9 @@ object FindOverlapMatch extends ToolCommand[Args] {
 
     val reader = Source.fromFile(cmdArgs.inputMetrics)
 
+    logger.info("Reading overlap file - Start")
     val data = reader.getLines().map(_.split("\t")).toArray
+    logger.info("Reading overlap file - Done")
 
     val samplesColumnHeader = data.head.zipWithIndex.tail
     val samplesRowHeader = data.map(_.head).zipWithIndex.tail
@@ -78,11 +80,11 @@ object FindOverlapMatch extends ToolCommand[Args] {
       matchesRegexes.foreach { regexes =>
         regexes.find(_._1.findFirstMatchIn(columnSampleName).isDefined).foreach {
           case (_, regex2) =>
-            val max = buffer.map(_._2).max
+            val max = if (buffer.isEmpty) 0.0 else buffer.map(_._2).max
             if (buffer.filter(_._2 == max).exists(x => regex2.findFirstMatchIn(x._1).isDefined)) {
               correctMatches += 1
             } else {
-              logger.warn(s"Incorrect match found, sample: $columnSampleName")
+              if (buffer.nonEmpty) logger.warn(s"Incorrect match found, sample: $columnSampleName")
               incorrectMatches += 1
               usedRows
                 .filter(x => regex2.findFirstIn(x._1).isDefined)
