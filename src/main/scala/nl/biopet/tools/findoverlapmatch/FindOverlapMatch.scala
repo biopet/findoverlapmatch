@@ -52,7 +52,9 @@ object FindOverlapMatch extends ToolCommand[Args] {
          if cmdArgs.columnSampleRegex.forall(_.findFirstIn(columnSampleName).isDefined)) {
 
       val buffer = ListBuffer[(String, Double)]()
-      val usedRows = samplesRowHeader.filter {
+      val usedRows = samplesRowHeader
+        .filter(!cmdArgs.filterSameNames || _._2 != columnSampleId)
+        .filter {
         case (name, id) =>
           cmdArgs.rowSampleRegex.forall(_.findFirstIn(name).isDefined)
       }
