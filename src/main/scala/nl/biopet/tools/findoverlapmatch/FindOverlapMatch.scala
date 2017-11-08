@@ -39,6 +39,7 @@ object FindOverlapMatch extends ToolCommand[Args] {
       val reader = Source.fromFile(file)
       val regexes = reader
         .getLines()
+        .filter(_.nonEmpty)
         .map { line =>
           val values = line.split("\t").map(_.r)
           values.head -> values.lift(1).getOrElse(values.head)
@@ -95,7 +96,9 @@ object FindOverlapMatch extends ToolCommand[Args] {
         }
       }
 
-      writer.println(s"$columnSampleName\t${buffer.mkString("\t")}")
+      (columnSampleName :: buffer.map(_.toString()).toList).mkString("\t")
+
+      writer.println((columnSampleName :: buffer.map(_.toString()).toList).mkString("\t"))
     }
     cmdArgs.outputFile.foreach(_ => writer.close())
     if (matchesRegexes.isDefined) {

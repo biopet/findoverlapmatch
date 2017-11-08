@@ -51,10 +51,10 @@ class FindOverlapMatchTest extends ToolTest[Args] {
   }
 
   @Test
-  def testBesteMatch(): Unit = {
-    val input = new File(resourcePath("/overlapmetrics.txt"))
+  def testBestMatch(): Unit = {
+    val input = resourceFile("/overlapmetrics.txt")
     val output = File.createTempFile("overlap.", ".txt")
-    val shouldBeOutput = new File(resourcePath("/overlapmetrics.best_match.output"))
+    val shouldBeOutput = resourceFile("/overlapmetrics.best_match.output")
     output.deleteOnExit()
     FindOverlapMatch.main(
       Array("-i",
@@ -64,6 +64,24 @@ class FindOverlapMatchTest extends ToolTest[Args] {
         "-o",
         output.getAbsolutePath,
         "--showBestMatch"))
+    Source.fromFile(output).getLines().toList shouldBe Source
+      .fromFile(shouldBeOutput)
+      .getLines()
+      .toList
+  }
+
+  @Test
+  def testRegex(): Unit = {
+    val input = resourceFile("/overlapmetrics.txt")
+    val output = File.createTempFile("overlap.", ".txt")
+    val shouldBeOutput = resourceFile("/overlapmetrics.regex.output")
+    val regexFile = resourceFile("/shouldMatchRegexes.tsv")
+    output.deleteOnExit()
+    FindOverlapMatch.main(
+      Array("-i", input.getAbsolutePath,
+        "-c", "1.0",
+        "-o", output.getAbsolutePath,
+        "--shouldMatchRegexFile", regexFile.getAbsolutePath))
     Source.fromFile(output).getLines().toList shouldBe Source
       .fromFile(shouldBeOutput)
       .getLines()
