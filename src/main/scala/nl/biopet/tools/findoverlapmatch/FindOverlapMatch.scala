@@ -50,15 +50,16 @@ object FindOverlapMatch extends ToolCommand[Args] {
     }
 
     for ((columnSampleName, columnSampleId) <- samplesColumnHeader
-         if cmdArgs.columnSampleRegex.forall(_.findFirstIn(columnSampleName).isDefined)) {
+         if cmdArgs.columnSampleRegex.forall(
+           _.findFirstIn(columnSampleName).isDefined)) {
 
       val buffer = ListBuffer[(String, Double)]()
       val usedRows = samplesRowHeader
         .filter(!cmdArgs.filterSameNames || _._2 != columnSampleId)
         .filter {
-        case (name, id) =>
-          cmdArgs.rowSampleRegex.forall(_.findFirstIn(name).isDefined)
-      }
+          case (name, id) =>
+            cmdArgs.rowSampleRegex.forall(_.findFirstIn(name).isDefined)
+        }
       for (rowSample <- usedRows) {
         val value = data(columnSampleId)(rowSample._2).toDouble
         if (value >= cmdArgs.cutoff && (!cmdArgs.filterSameNames || columnSampleId != rowSample._2)) {
@@ -81,24 +82,32 @@ object FindOverlapMatch extends ToolCommand[Args] {
       }
 
       matchesRegexes.foreach { regexes =>
-        regexes.find(_._1.findFirstMatchIn(columnSampleName).isDefined).foreach {
-          case (_, regex2) =>
-            val max = if (buffer.isEmpty) 0.0 else buffer.map(_._2).max
-            if (buffer.filter(_._2 == max).exists(x => regex2.findFirstMatchIn(x._1).isDefined)) {
-              correctMatches += 1
-            } else {
-              if (buffer.nonEmpty) logger.warn(s"Incorrect match found, sample: $columnSampleName")
-              incorrectMatches += 1
-              usedRows
-                .filter(x => regex2.findFirstIn(x._1).isDefined)
-                .foreach(x => buffer.+=((x._1, data(columnSampleId)(x._2).toDouble)))
-            }
-        }
+        regexes
+          .find(_._1.findFirstMatchIn(columnSampleName).isDefined)
+          .foreach {
+            case (_, regex2) =>
+              val max = if (buffer.isEmpty) 0.0 else buffer.map(_._2).max
+              if (buffer
+                    .filter(_._2 == max)
+                    .exists(x => regex2.findFirstMatchIn(x._1).isDefined)) {
+                correctMatches += 1
+              } else {
+                if (buffer.nonEmpty)
+                  logger.warn(
+                    s"Incorrect match found, sample: $columnSampleName")
+                incorrectMatches += 1
+                usedRows
+                  .filter(x => regex2.findFirstIn(x._1).isDefined)
+                  .foreach(x =>
+                    buffer.+=((x._1, data(columnSampleId)(x._2).toDouble)))
+              }
+          }
       }
 
       (columnSampleName :: buffer.map(_.toString()).toList).mkString("\t")
 
-      writer.println((columnSampleName :: buffer.map(_.toString()).toList).mkString("\t"))
+      writer.println(
+        (columnSampleName :: buffer.map(_.toString()).toList).mkString("\t"))
     }
     cmdArgs.outputFile.foreach(_ => writer.close())
     if (matchesRegexes.isDefined) {
