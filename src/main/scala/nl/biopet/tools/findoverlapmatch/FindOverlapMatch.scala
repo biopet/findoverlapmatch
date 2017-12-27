@@ -119,4 +119,44 @@ object FindOverlapMatch extends ToolCommand[Args] {
     logger.info(s"multi $multiOverlap found")
     logger.info("Done")
   }
+
+  def descriptionText: String =
+    s"""
+       |$toolName looks for overlapping samples in a sample matrix.
+       |It compares samples and lists similar samples based on a cutoff point.
+       |It can also check if columns in a sample matrix match a certain regex.
+     """.stripMargin
+
+  def manualText: String =
+    s"""
+       |
+       |Input can be a text file like the following input file:
+       |
+       |    	      sample1	sample2	sample3
+       |    sample1	1.0	    0.5	    0.9
+       |    sample2	0.5	    1.0	    0.5
+       |    sample3	0.9	    0.5	    1.0
+       |
+       |
+     """.stripMargin
+
+  def exampleText: String =
+    s"""
+       |To check above example with threshold 0.9:
+       |${example("-i", "input.txt", "-c", "0.9", "-o", "output.txt")}
+       |
+       |Will yield the following file:
+       |
+       |    sample1	(sample3,0.9)
+       |    sample2
+       |    sample3	(sample1,0.9)
+       |
+       |With `--use_same_names` set it should be:
+       |
+       |
+       |    sample1	(sample1,1.0)	(sample3,0.9)
+       |    sample2	(sample2,1.0)
+       |    sample3	(sample1,0.9)	(sample3,1.0)
+       |
+     """.stripMargin
 }
