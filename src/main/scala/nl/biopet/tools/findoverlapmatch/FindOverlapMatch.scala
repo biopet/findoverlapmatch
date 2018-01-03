@@ -1,3 +1,24 @@
+/*
+ * Copyright (c) 2014 Sequencing Analysis Support Core - Leiden University Medical Center
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
 package nl.biopet.tools.findoverlapmatch
 
 import java.io.PrintStream
@@ -9,7 +30,7 @@ import scala.io.Source
 
 object FindOverlapMatch extends ToolCommand[Args] {
   def emptyArgs: Args = Args()
-  def argsParser = new ArgsParser(toolName)
+  def argsParser = new ArgsParser(this)
   def main(args: Array[String]): Unit = {
     val cmdArgs = cmdArrayToArgs(args)
 
@@ -119,4 +140,47 @@ object FindOverlapMatch extends ToolCommand[Args] {
     logger.info(s"multi $multiOverlap found")
     logger.info("Done")
   }
+
+  def descriptionText: String =
+    s"""
+       |$toolName looks for overlapping samples in a sample matrix. An example of
+       |a tool that creates such a matrix is
+       |[VcfStats](https://github.com/biopet/vcfstats).
+       |
+       |It compares samples and lists similar samples based on a cutoff point.
+       |It can also check if columns in a sample matrix match a certain regex.
+     """.stripMargin
+
+  def manualText: String =
+    s"""
+       |
+       |Input can be a text file like the following input file:
+       |
+       |    	      sample1	sample2	sample3
+       |    sample1	1.0	    0.5	    0.9
+       |    sample2	0.5	    1.0	    0.5
+       |    sample3	0.9	    0.5	    1.0
+       |
+       |
+     """.stripMargin
+
+  def exampleText: String =
+    s"""
+       |To check above example with threshold 0.9:
+       |${example("-i", "input.txt", "-c", "0.9", "-o", "output.txt")}
+       |
+       |Will yield the following file:
+       |
+       |    sample1	(sample3,0.9)
+       |    sample2
+       |    sample3	(sample1,0.9)
+       |
+       |With `--use_same_names` set it should be:
+       |
+       |
+       |    sample1	(sample1,1.0)	(sample3,0.9)
+       |    sample2	(sample2,1.0)
+       |    sample3	(sample1,0.9)	(sample3,1.0)
+       |
+     """.stripMargin
 }
