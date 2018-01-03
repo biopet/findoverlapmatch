@@ -143,7 +143,10 @@ object FindOverlapMatch extends ToolCommand[Args] {
 
   def descriptionText: String =
     s"""
-       |$toolName looks for overlapping samples in a sample matrix.
+       |$toolName looks for overlapping samples in a sample matrix. An example of
+       |a tool that creates such a matrix is
+       |[VcfStats](https://github.com/biopet/vcfstats).
+       |
        |It compares samples and lists similar samples based on a cutoff point.
        |It can also check if columns in a sample matrix match a certain regex.
      """.stripMargin
