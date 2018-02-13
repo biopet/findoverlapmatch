@@ -53,7 +53,7 @@ object FindOverlapMatch extends ToolCommand[Args] {
 
     val writer = cmdArgs.outputFile match {
       case Some(file) => new PrintStream(file)
-      case _ => Console.out
+      case _          => Console.out
     }
 
     val matchesRegexes = cmdArgs.shouldMatchRegexFile.map { file =>
