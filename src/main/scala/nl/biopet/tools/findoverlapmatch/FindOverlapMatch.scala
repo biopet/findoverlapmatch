@@ -42,8 +42,14 @@ object FindOverlapMatch extends ToolCommand[Args] {
     val data = reader.getLines().map(_.split("\t")).toArray
     logger.info("Reading overlap file - Done")
 
-    val samplesColumnHeader = data.head.zipWithIndex.tail
-    val samplesRowHeader = data.map(_.head).zipWithIndex.tail
+    val samplesColumnHeader = {
+      val header = data.headOption
+        .getOrElse(throw new IllegalArgumentException("File is empty"))
+        .zipWithIndex
+      require(header.length > 1, "No Samples found in the header")
+      header.tail
+    }
+    val samplesRowHeader = data.map(_.headOption.getOrElse(throw new IllegalArgumentException("first column should always be filled"))).zipWithIndex.tail
 
     var overlap = 0
     var multiOverlap = 0
